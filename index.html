@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messi vs Ronaldo PRO</title>
+<style>
+body{
+  margin:0;
+  background:#0a0a0a;
+  color:white;
+  font-family:Arial,sans-serif;
+  text-align:center;
+}
+h1{color:gold;padding:15px}
+.track{
+  width:95%;
+  height:75px;
+  border:2px solid #fff;
+  margin:12px auto;
+  position:relative;
+  overflow:hidden;
+}
+.label{
+  position:absolute;
+  left:10px;
+  top:5px;
+  font-size:14px;
+}
+.ball{
+  position:absolute;
+  left:10px;
+  top:28px;
+  font-size:34px;
+  cursor:pointer;
+  transition:.2s;
+}
+#winner{color:gold;}
+table{
+  margin:20px auto;
+  border-collapse:collapse;
+  width:320px;
+}
+th,td{
+  border:1px solid #fff;
+  padding:8px;
+}
+button{
+  padding:10px 20px;
+  font-size:16px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>🔥 Messi vs Ronaldo PRO ⚽</h1>
+
+<div class="track"><div class="label">🇦🇷 Messi</div><div class="ball" id="b1" onclick="move(0)">⚽</div></div>
+<div class="track"><div class="label">🇵🇹 Ronaldo</div><div class="ball" id="b2" onclick="move(1)">⚽</div></div>
+<div class="track"><div class="label">🇧🇷 Brazil</div><div class="ball" id="b3" onclick="move(2)">⚽</div></div>
+<div class="track"><div class="label">🇫🇷 France</div><div class="ball" id="b4" onclick="move(3)">⚽</div></div>
+<div class="track"><div class="label">🇪🇸 Spain</div><div class="ball" id="b5" onclick="move(4)">⚽</div></div>
+
+<h2 id="winner"></h2>
+<button onclick="resetGame()">🔄 Reset Race</button>
+
+<h2>🏆 Leaderboard</h2>
+<table>
+<thead><tr><th>Player</th><th>Wins</th></tr></thead>
+<tbody id="leaderboard"></tbody>
+</table>
+
+<script>
+const names=["Messi","Ronaldo","Brazil","France","Spain"];
+let pos=[10,10,10,10,10];
+let gameOver=false;
+
+let wins=JSON.parse(localStorage.getItem("footballWins")) || {
+  Messi:0,Ronaldo:0,Brazil:0,France:0,Spain:0
+};
+
+updateBoard();
+
+function move(i){
+  if(gameOver) return;
+
+  pos[i]+=Math.floor(Math.random()*40)+20;
+  document.getElementById("b"+(i+1)).style.left=pos[i]+"px";
+
+  const finish=document.querySelector(".track").clientWidth-60;
+
+  if(pos[i]>=finish){
+    gameOver=true;
+    const winner=names[i];
+
+    wins[winner]++;
+    localStorage.setItem("footballWins",JSON.stringify(wins));
+
+    document.getElementById("winner").innerHTML="🏆 Winner: <b>"+winner+"</b>";
+    updateBoard();
+
+    setTimeout(resetGame,2500);
+  }
+}
+
+function resetGame(){
+  pos=[10,10,10,10,10];
+  gameOver=false;
+  document.getElementById("winner").innerHTML="";
+  for(let i=0;i<5;i++){
+    document.getElementById("b"+(i+1)).style.left="10px";
+  }
+}
+
+function updateBoard(){
+  const tbody=document.getElementById("leaderboard");
+  const sorted=Object.entries(wins).sort((a,b)=>b[1]-a[1]);
+
+  tbody.innerHTML=sorted.map(x =>
+    `<tr><td>${x[0]}</td><td>${x[1]}</td></tr>`
+  ).join("");
+}
+</script>
+
+</body>
+</html>
